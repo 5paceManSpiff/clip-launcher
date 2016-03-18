@@ -1,0 +1,71 @@
+<html>
+  <head>
+
+    <meta charset="utf-8">
+
+    <title>Clip Launcher</title>
+
+    <link href="style.css" rel="stylesheet">
+
+    <script src="lib/angular/angular.min.js"></script>
+
+  </head>
+  <body ng-app="clip-launcher">
+
+    <input clip-input type="file" id="files" name="files[]" multiple />
+
+    <ul ng-controller="ListCtrl">
+      <li ng-repeat="clip in clips track by $index">
+        <h2>{{clip.file.name}}</h2>
+        <audio controls>
+          <source clip-source data="{{clip.data}}" type="{{clip.file.type}}">
+        </audio>
+      </li>
+    </ul>
+
+    <script>
+
+      var app = angular.module('clip-launcher', []);
+
+      app.directive('clipInput', function($rootScope) {
+        return {
+          restrict: 'A',
+          link: function(scope, elem, attr) {
+            elem.bind('change', function(e) {
+              var files = e.target.files;
+
+              for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+
+                reader.onload = function(fileEvent) {
+                  $rootScope.$broadcast('new-file', file, fileEvent.target.result);
+                };
+
+                reader.readAsDataURL(file);
+              }
+            });
+          }
+        };
+      });
+
+      app.directive('clipSource', function() {
+        return {
+          link: function(scope, elem, attr) {
+            elem.attr('src', attr.data);
+          }
+        };
+      });
+
+      app.controller('ListCtrl', function($scope, $rootScope) {
+        $scope.clips = [];
+
+        $rootScope.$on('new-file', function(e, file, data) {
+          $scope.clips.push({file: file, data: data});
+          $scope.$digest();
+        });
+      });
+
+    </script>
+  </body>
+</html>
