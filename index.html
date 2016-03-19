@@ -5,67 +5,35 @@
 
     <title>Clip Launcher</title>
 
+    <link href="lib/skeleton/css/normalize.css" rel="stylesheet">
+    <link href="lib/skeleton/css/skeleton.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 
     <script src="lib/angular/angular.min.js"></script>
+    <script src="main.js"></script>
 
   </head>
   <body ng-app="clip-launcher">
+    <div class="container" ng-controller="List">
 
-    <input clip-input type="file" id="files" name="files[]" multiple />
+      <div class="row">
+        <input file-reader type="file" multiple />
+      </div>
 
-    <ul ng-controller="ListCtrl">
-      <li ng-repeat="clip in clips track by $index">
-        <h2>{{clip.file.name}}</h2>
-        <audio controls>
-          <source clip-source data="{{clip.data}}" type="{{clip.file.type}}">
-        </audio>
-      </li>
-    </ul>
-
-    <script>
-
-      var app = angular.module('clip-launcher', []);
-
-      app.directive('clipInput', function($rootScope) {
-        return {
-          restrict: 'A',
-          link: function(scope, elem, attr) {
-            elem.bind('change', function(e) {
-              var files = e.target.files;
-
-              for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var reader = new FileReader();
-
-                reader.onload = function(fileEvent) {
-                  $rootScope.$broadcast('new-file', file, fileEvent.target.result);
-                };
-
-                reader.readAsDataURL(file);
-              }
-            });
-          }
-        };
-      });
-
-      app.directive('clipSource', function() {
-        return {
-          link: function(scope, elem, attr) {
-            elem.attr('src', attr.data);
-          }
-        };
-      });
-
-      app.controller('ListCtrl', function($scope, $rootScope) {
-        $scope.clips = [];
-
-        $rootScope.$on('new-file', function(e, file, data) {
-          $scope.clips.push({file: file, data: data});
-          $scope.$digest();
-        });
-      });
-
-    </script>
+      <table class="u-full-width">
+        <tr>
+          <th>File</th>
+          <th>Audio</th>
+          <th>Key Binding</th>
+        </tr>
+        <tbody>
+          <tr ng-repeat="clip in clips">
+            <td>{{clip.name}}</td>
+            <td><audio-clip src="clip"></td>
+            <td><button ng-class="{'button': !clip.setting, 'button-primary': clip.setting}" ng-click="setKey($index)">{{clip.key}}</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </body>
 </html>
