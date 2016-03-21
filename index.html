@@ -17,6 +17,7 @@
     <div class="container" ng-controller="List">
 
       <div class="row">
+        <button class="button" ng-class="{'button-primary': state == 'Pause'}" ng-click="toggleState()">{{state}}</button>
         <input file-reader type="file" multiple />
       </div>
 
@@ -30,7 +31,7 @@
           <tr ng-repeat="clip in clips">
             <td>{{clip.name}}</td>
             <td><audio-clip src="clip"></td>
-            <td><button ng-class="{'button': !clip.setting, 'button-primary': clip.setting}" ng-click="setKey($index)">{{clip.key}}</button></td>
+            <td><key-binding src="clip"></key-binding></td>
           </tr>
         </tbody>
       </table>
